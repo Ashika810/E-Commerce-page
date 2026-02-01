@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SVG Live Drawing</title>
+
+<style>
+  body {
+    font-family: Arial;
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+  }
+
+  svg {
+    border: 2px solid #333;
+    background: #fff;
+    cursor: crosshair;
+  }
+</style>
+</head>
+
+<body>
+
+<svg id="drawingArea" width="600" height="400"></svg>
+
+<script>
+  const svg = document.getElementById("drawingArea");
+
+  let drawing = false;
+  let path;
+  let lastX, lastY;
+
+  svg.addEventListener("mousedown", (e) => {
+    drawing = true;
+
+    const point = getMousePosition(e);
+    lastX = point.x;
+    lastY = point.y;
+
+    path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("fill", "none");
+    path.setAttribute("stroke", "black");
+    path.setAttribute("stroke-width", "2");
+
+    path.setAttribute("d", `M ${lastX} ${lastY}`);
+    svg.appendChild(path);
+  });
+
+  svg.addEventListener("mousemove", (e) => {
+    if (!drawing) return;
+
+    const point = getMousePosition(e);
+    const d = path.getAttribute("d");
+
+    path.setAttribute("d", d + ` L ${point.x} ${point.y}`);
+  });
+
+  svg.addEventListener("mouseup", () => {
+    drawing = false;
+  });
+
+  svg.addEventListener("mouseleave", () => {
+    drawing = false;
+  });
+
+  function getMousePosition(event) {
+    const rect = svg.getBoundingClientRect();
+    return {
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top
+    };
+  }
+</script>
+
+</body>
+</html>
